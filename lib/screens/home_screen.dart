@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   children: [
                     ToggleRow(
                       icon: Icons.developer_mode_rounded,
-                      title: 'Developer options',
+                      title: 'Developer Options',
                       subtitle: 'Enable Developer settings',
                       enabled: _devOptionsOn,
                       loading: _loading || _busy,
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(height: 12),
                     ToggleRow(
                       icon: Icons.usb_rounded,
-                      title: 'USB debugging',
+                      title: 'USB Debugging',
                       subtitle: 'Debug over a USB cable',
                       enabled: _usbDebugOn,
                       loading: _loading || _busy,
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     const SizedBox(height: 12),
                     ToggleRow(
                       icon: Icons.wifi_rounded,
-                      title: 'Wireless debugging',
+                      title: 'Wireless Debugging',
                       subtitle: 'Debug over Wi-Fi',
                       enabled: _wirelessDebugOn,
                       loading: _loading || _busy,
