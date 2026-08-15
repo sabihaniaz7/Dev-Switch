@@ -164,14 +164,22 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun openWirelessDebugging() {
-        // There is no dedicated public action for the wireless debugging
-        // screen, so we route into Developer Options where it lives
-        // (API 30+ shows "Wireless debugging" as its own row there).
+        // There's no officially documented public constant for the
+        // Wireless debugging sub-screen, but AOSP's Settings app ships it
+        // under this action string on API 30+. We try it first, and fall
+        // back to the main Developer options screen if the device/ROM
+        // doesn't expose it (some OEM skins rename or hide it).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            openDeveloperOptions()
-        } else {
-            openDeveloperOptions()
+            val intent = Intent("android.settings.WIRELESS_DEBUGGING_SETTINGS")
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try {
+                startActivity(intent)
+                return
+            } catch (e: Exception) {
+                // Falls through to Developer options below.
+            }
         }
+        openDeveloperOptions()
     }
 
     private fun openAppSettingsFallback() {
