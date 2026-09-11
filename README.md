@@ -10,6 +10,15 @@ system settings:
 Toggling a switch changes the setting directly on the device. There is no
 redirect to the system Settings app.
 
+## Why I built this
+
+Every time I needed to enable USB or wireless debugging, I had to dig
+through Settings → System → Developer options → scroll → find the right
+toggle, every single time. It's a small thing, but it adds up fast for
+anyone who debugs on a physical device daily. Dev Switch turns that
+multi-tap settings hunt into a single tap, either from the app or directly
+from the home screen widget, with no navigation required.
+
 ## Required one-time setup
 
 Android treats these settings as protected. A normal app install cannot
@@ -55,18 +64,25 @@ the situation here since this app isn't going through Google Play.
 ```
 dev_switch/
   lib/
-    main.dart                        App entry point
-    theme/app_colors.dart            Light color palette
+    main.dart                         App entry point
+    theme/app_colors.dart             Light color palette
     services/dev_settings_bridge.dart Platform channel calls
-    screens/home_screen.dart         Main screen: header + 3 toggles
-    screens/instructions_screen.dart One-time setup guide (from app bar)
-    widgets/toggle_row.dart          Reusable toggle card
-    widgets/command_box.dart         Copyable command box
-    widgets/permission_dialog.dart   Short setup dialog
-    widgets/wireless_pair_dialog.dart Wireless pairing shortcut dialog
+    screens/home_screen.dart          Main screen: header + 3 toggles
+    screens/instructions_screen.dart  One-time setup guide (from app bar)
+    widgets/toggle_row.dart           Reusable toggle card
+    widgets/command_box.dart          Copyable command box
+    widgets/permission_dialog.dart    Short setup dialog
   android/
     app/src/main/AndroidManifest.xml
-    app/src/main/kotlin/com/example/dev_switch/MainActivity.kt
+    app/src/main/kotlin/com/example/dev_switch/
+      MainActivity.kt
+      DevSettingsHelper.kt
+      DevSwitchWidgetProvider.kt
+    app/src/main/res/
+      layout/widget_dev_switch.xml
+      drawable/ (widget backgrounds and icons)
+      values/widget_strings.xml
+      xml/dev_switch_widget_info.xml
   pubspec.yaml
 ```
 
@@ -87,45 +103,22 @@ dev_switch/
 ## How the native bridge works
 
 The Flutter side talks to Android over a `MethodChannel` named
-`dev_switch/settings`, defined in `main.dart` as `DevSettingsBridge`, with
-these methods:
+`dev_switch/settings`, defined as `DevSettingsBridge`, with these methods:
 
 - `isDeveloperOptionsEnabled`
 - `isUsbDebuggingEnabled`
 - `isWirelessDebuggingEnabled`
-- `openDeveloperOptions`
-- `openWirelessDebugging`
-
 - `hasWriteSecureSettingsPermission`
 - `setDeveloperOptionsEnabled`
 - `setUsbDebuggingEnabled`
 - `setWirelessDebuggingEnabled`
+- `openDeveloperOptions`
+- `openWirelessDebugging`
 
-On the Android side, `MainActivity.kt` implements the writes with
-`Settings.Global.putInt(...)` calls, and implements `openDeveloperOptions`
-/ `openWirelessDebugging` as a fallback the UI no longer uses by default
-but keeps available in the bridge.
-
-## Setup
-
-1. Make sure Flutter is installed and `flutter doctor` passes for Android.
-2. Clone the repository:
-   ```
-   git clone https://github.com/sabihaniaz7/Dev-Switch.git
-   cd Dev-Switch
-   ```
-
-3. Install dependencies:
-
-   ```
-   flutter pub get
-   ```
-
-4. Run on a connected Android device or emulator:
-
-   ```
-   flutter run
-   ```
+On the Android side, `MainActivity.kt` and `DevSwitchWidgetProvider.kt`
+both call into `DevSettingsHelper.kt`, which does the actual
+`Settings.Global.putInt(...)` reads and writes. Keeping that logic in one
+shared file means the app and the widget can never disagree on state.
 
 ## Home screen widget
 
@@ -140,20 +133,34 @@ Tapping an icon toggles that setting immediately, using the same
 `WRITE_SECURE_SETTINGS` permission and the same cascade rule as the app —
 turning Developer options off from the widget also turns off USB and
 Wireless debugging. If the permission hasn't been granted yet, tapping any
-icon opens the app instead of failing silently, so the setup dialog is
-never more than one tap away.
+icon opens the app instead of failing silently.
 
 To add it: long-press the home screen → Widgets → "Dev Switch" → drag it
 onto the home screen. No extra setup beyond the one-time adb command
 above; the widget and the app share the same permission grant.
 
-### How it's built
+## Setup
 
-- `DevSettingsHelper.kt` — the actual read/write logic (used by both the
-  app and the widget, so they never disagree on state)
-- `DevSwitchWidgetProvider.kt` — the widget itself, handles taps and
-  redraws the icons
-- `res/layout/widget_dev_switch.xml` — the pill layout
-- `res/drawable/icon_circle_on.xml` / `icon_circle_off.xml` /
-  `icon_circle_locked.xml` — the three visual states
-- `res/xml/dev_switch_widget_info.xml` — widget size and metadata
+1. Make sure Flutter is installed and `flutter doctor` passes for Android.
+2. Clone the repository:
+   ```
+   git clone https://github.com/sabihaniaz7/Dev-Switch.git
+   cd Dev-Switch
+   ```
+3. Install dependencies:
+   ```
+   flutter pub get
+   ```
+4. Run on a connected Android device:
+   ```
+   flutter run
+   ```
+5. Grant the one-time permission (see above), then use the app or the
+   widget freely.
+
+## Tech stack
+
+- Flutter / Dart for the UI
+- Kotlin for the native Android bridge and home screen widget
+- Platform Channels for Flutter ↔ Android communication
+- Android `AppWidgetProvider` and `RemoteViews` for the widget
