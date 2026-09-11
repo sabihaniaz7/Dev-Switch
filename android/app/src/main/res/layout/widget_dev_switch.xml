@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@drawable/widget_background"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/icon_dev"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_dev_options"
+        android:background="@drawable/icon_circle_off"
+        android:scaleType="fitCenter"
+        android:contentDescription="Developer options" />
+
+    <FrameLayout
+        android:layout_width="14dp"
+        android:layout_height="1dp" />
+
+    <ImageView
+        android:id="@+id/icon_usb"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_usb"
+        android:background="@drawable/icon_circle_off"
+        android:scaleType="fitCenter"
+        android:contentDescription="USB debugging" />
+
+    <FrameLayout
+        android:layout_width="14dp"
+        android:layout_height="1dp" />
+
+    <ImageView
+        android:id="@+id/icon_wireless"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_wireless"
+        android:background="@drawable/icon_circle_off"
+        android:scaleType="fitCenter"
+        android:contentDescription="Wireless debugging" />
+
+</LinearLayout>

@@ -37,5 +37,19 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <receiver
+            android:name=".DevSwitchWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.dev_switch.TOGGLE_DEV" />
+                <action android:name="com.example.dev_switch.TOGGLE_USB" />
+                <action android:name="com.example.dev_switch.TOGGLE_WIRELESS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/dev_switch_widget_info" />
+        </receiver>
     </application>
 </manifest>
