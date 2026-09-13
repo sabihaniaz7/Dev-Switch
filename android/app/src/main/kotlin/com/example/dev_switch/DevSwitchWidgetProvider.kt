@@ -121,6 +121,17 @@ class DevSwitchWidgetProvider : AppWidgetProvider() {
             R.id.icon_wireless, pendingIntent(context, ACTION_TOGGLE_WIRELESS)
         )
 
+        val appIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val appPendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            appIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        views.setOnClickPendingIntent(R.id.widget_root, appPendingIntent)
+
         return views
     }
 
