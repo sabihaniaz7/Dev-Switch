@@ -12,6 +12,7 @@ class ToggleRow extends StatelessWidget {
   final VoidCallback? onExtraTap;
   final IconData? extraIcon;
   final ValueChanged<bool> onChanged;
+  final VoidCallback? onLockedTap;
 
   const ToggleRow({
     super.key,
@@ -25,6 +26,7 @@ class ToggleRow extends StatelessWidget {
     this.lockedReason,
     this.onExtraTap,
     this.extraIcon,
+    this.onLockedTap,
   });
 
   @override
@@ -74,10 +76,14 @@ class ToggleRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
+                // Always shows the plain subtitle. The locked reason is
+                // surfaced only when the user actually tries to toggle
+                // it (see onLockedTap), not just because Developer
+                // options happens to be off right now.
                 Text(
-                  locked && lockedReason != null ? lockedReason! : subtitle,
-                  style: TextStyle(
-                    color: locked ? AppColors.warning : AppColors.textSecondary,
+                  subtitle,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -104,10 +110,31 @@ class ToggleRow extends StatelessWidget {
                 color: AppColors.primary,
               ),
             )
+          else if (locked)
+            // The switch itself stays visually dimmed/disabled, but a
+            // GestureDetector on top catches the tap (IgnorePointer stops
+            // the disabled Switch from swallowing it first) so tapping a
+            // locked toggle can still respond with a message.
+            GestureDetector(
+              onTap: onLockedTap,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Switch(
+                    value: enabled,
+                    onChanged: null,
+                    activeThumbColor: AppColors.headerEnd,
+                    activeTrackColor: AppColors.primary.withValues(alpha: 0.25),
+                    inactiveThumbColor: AppColors.textSecondary,
+                    inactiveTrackColor: AppColors.background,
+                  ),
+                ),
+              ),
+            )
           else
             Switch(
               value: enabled,
-              onChanged: locked ? null : onChanged,
+              onChanged: onChanged,
               activeThumbColor: AppColors.headerEnd,
               activeTrackColor: AppColors.primary.withValues(alpha: 0.25),
               inactiveThumbColor: AppColors.textSecondary,

@@ -76,9 +76,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final ok = await DevSettingsBridge.setDeveloperOptionsEnabled(value);
     if (ok) {
       setState(() => _devOptionsOn = value);
-      // Turning Developer options off cascades: USB and Wireless
-      // debugging live inside it, so Android turns them off too.
-      // Mirror that here instead of leaving stale "on" switches.
       if (!value) {
         if (_usbDebugOn) {
           await DevSettingsBridge.setUsbDebuggingEnabled(false);
@@ -98,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _toggleUsbDebugging(bool value) async {
-    if (!_devOptionsOn) return; // locked in the UI, extra guard here
+    if (!_devOptionsOn) return;
     if (!await _guardPermission()) return;
     setState(() => _busy = true);
     final ok = await DevSettingsBridge.setUsbDebuggingEnabled(value);
@@ -120,6 +117,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _showFailureSnack() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not change that setting.')),
+    );
+  }
+
+  void _showLockedSnack() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Turn on Developer options first')),
     );
   }
 
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       enabled: _usbDebugOn,
                       loading: _loading || _busy,
                       locked: !_devOptionsOn,
-                      lockedReason: 'Turn on Developer options first',
+                      onLockedTap: _showLockedSnack,
                       onChanged: _toggleUsbDebugging,
                     ),
                     const SizedBox(height: 12),
@@ -168,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       enabled: _wirelessDebugOn,
                       loading: _loading || _busy,
                       locked: !_devOptionsOn,
-                      lockedReason: 'Turn on Developer options first',
+                      onLockedTap: _showLockedSnack,
                       extraIcon: Icons.qr_code_scanner_rounded,
                       onExtraTap: () =>
                           DevSettingsBridge.openWirelessDebugging(),
@@ -185,13 +188,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildHeader(BuildContext context) {
-    // Dynamic top height of status bar/notch
     final double topPadding = MediaQuery.of(context).padding.top;
     return ClipPath(
       clipper: _HeaderClipper(),
       child: Container(
         width: double.infinity,
-        // Combine status bar height + custom top padding (20)
         padding: EdgeInsets.fromLTRB(20, 20 + topPadding, 20, 46),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -219,9 +220,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _hasPermission
-                        ? 'Ready to switch'
-                        : 'Setup needed - Check Instructions',
+                    _hasPermission ? '' : 'Setup Needed - Check Instructions',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.75),
                       fontSize: 12.5,
@@ -241,11 +240,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                _HeaderIconButton(
-                  icon: Icons.refresh_rounded,
-                  onTap: _refreshStatus,
-                ),
               ],
             ),
           ],
@@ -255,9 +249,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 }
 
-// Cuts an asymmetric curve into the bottom of the header: mostly
-/// straight across, sweeping down into a deeper curve on the right side,
-/// echoing the reference screen's swoop without reproducing it exactly.
 class _HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

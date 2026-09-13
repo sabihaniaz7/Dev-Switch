@@ -56,6 +56,26 @@ class PermissionDialog extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ),
           ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Text(
+              'Getting permission error?\nSome phone brands add an '
+              'extra security toggle for this. Look for something like '
+              '"USB debugging (Security settings)" inside Developer '
+              'options, turn it on, sign in if asked, then try the '
+              'command again.',
+              style: TextStyle(
+                color: AppColors.warning,
+                fontSize: 11.5,
+                height: 1.4,
+              ),
+            ),
+          ),
         ],
       ),
       actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
