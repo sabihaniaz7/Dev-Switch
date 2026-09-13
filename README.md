@@ -18,10 +18,10 @@ redirect to the system Settings app.
 ## Screenshots
 
 <p align="center">
-  <img src="assets/screenshots/toggleOn.png" width="200" alt="Home screen" />
-  <img src="assets/screenshots/toggleOFF.png" width="200" alt="Toggles enabled" />
-  <img src="assets/screenshots/WirelessDebuggingNotification.png" width="200" alt="Instructions screen" />
-  <img src="assets/screenshots/HomeWidget.png" width="200" alt="Home screen widget" />
+  <img src="assets/screenshots/toggleOn.png" width="45%" alt="Toggle Enabled" />
+  <img src="assets/screenshots/toggleOFF.png" width="45%" alt="Toggles OFF" />
+  <img src="assets/screenshots/WirelessDebuggingNotification.png" width="45%" alt="Wireless Debugging ON Notification" />
+  <img src="assets/screenshots/HomeWidget.png" width="45%" alt="Home screen widget" />
 </p>
 
 ## Why I built this
@@ -48,7 +48,7 @@ connected over adb:
 adb shell pm grant com.example.dev_switch android.permission.WRITE_SECURE_SETTINGS
 ```
 <p align="center">
-  <img src="assets/screenshots/command.png" alt="ADB Grant Command Execution" />
+  <img src="assets/screenshots/command.PNG" alt="ADB Grant Command Execution" />
 </p>
 
 Then flip a switch in the app. Permission is checked live on every tap, so
