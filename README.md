@@ -1,5 +1,10 @@
 # Dev Switch
 
+![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-Dart-02569B?logo=flutter&logoColor=white)
+[![Download APK](https://img.shields.io/badge/Download-APK-2F6FE4?logo=android&logoColor=white)](https://github.com/sabihaniaz7/Dev-Switch/releases/latest)
+[![Watch Demo](https://img.shields.io/badge/Watch-Demo-FF0000?logo=youtube&logoColor=white)](https://drive.google.com/file/d/1HCbT3sYw0hwqdT10luONgk2sSfBgZniK/view?usp=sharing)
+
 A single-screen Flutter app (Android only) with real switches for three
 system settings:
 
@@ -9,6 +14,15 @@ system settings:
 
 Toggling a switch changes the setting directly on the device. There is no
 redirect to the system Settings app.
+
+## Screenshots
+
+<p align="center">
+  <img src="assets/screenshots/toggleOn.png" width="200" alt="Home screen" />
+  <img src="assets/screenshots/toggleOFF.png" width="200" alt="Toggles enabled" />
+  <img src="assets/screenshots/WirelessDebuggingNotification.png" width="200" alt="Instructions screen" />
+  <img src="assets/screenshots/HomeWidget.png" width="200" alt="Home screen widget" />
+</p>
 
 ## Why I built this
 
@@ -33,6 +47,9 @@ connected over adb:
 ```
 adb shell pm grant com.example.dev_switch android.permission.WRITE_SECURE_SETTINGS
 ```
+<p align="center">
+  <img src="assets/screenshots/command.png" alt="ADB Grant Command Execution" />
+</p>
 
 Then flip a switch in the app. Permission is checked live on every tap, so
 it takes effect immediately — no need to reopen or restart the app. This is
@@ -44,25 +61,26 @@ with this exact command instead of changing the setting, so the failure
 mode is clear rather than silent.
 
 ### If the grant command fails
- 
+
 Some OEM Android skins add extra restrictions on top of standard Android
 and block `pm grant` for this permission, even though it works fine on a
 stock/Pixel-style device. If you see a `SecurityException` mentioning
 `GRANT_RUNTIME_PERMISSIONS`, your device's manufacturer is very likely one
 of them.
- 
+
 **Xiaomi / Redmi / POCO (MIUI, HyperOS):**
- 
+
 1. Go to Settings → Additional settings → Developer options.
 2. Turn on **USB debugging (Security settings)** — this is separate from
    the regular USB debugging toggle.
-3. Sign in to any account if it asks for.
+3. Sign in with your Account, if it asks.
 4. MIUI/HyperOS may enforce a short cooldown before this actually takes
    effect, even if the toggle shows on immediately. If the grant command
    still fails right after enabling it, wait a while and try again.
 5. Re-run the grant command above.
+
 **Other brands (Oppo/Realme/ColorOS, Vivo/Funtouch, Samsung, etc.):**
- 
+
 The exact toggle name and location vary, but the fix is the same idea —
 look in Developer options for a setting related to "USB debugging
 security" or similar, enable it, and sign in to any account it asks for.
@@ -152,10 +170,6 @@ shared file means the app and the widget can never disagree on state.
 
 There's also a native Android home screen widget: a black rounded pill
 with three icons (Developer options, USB debugging, Wireless debugging).
-Off icons sit in an outlined dark circle; on icons fill with the primary
-blue, matching the look of the phone's own Wi-Fi/data quick toggles.
-Locked icons (USB/Wireless while Developer options is off) sit dimmed and
-don't respond to taps.
 
 Tapping an icon toggles that setting immediately, using the same
 `WRITE_SECURE_SETTINGS` permission and the same cascade rule as the app —
