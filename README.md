@@ -43,6 +43,34 @@ If the permission has not been granted yet, tapping a switch shows a dialog
 with this exact command instead of changing the setting, so the failure
 mode is clear rather than silent.
 
+### If the grant command fails
+ 
+Some OEM Android skins add extra restrictions on top of standard Android
+and block `pm grant` for this permission, even though it works fine on a
+stock/Pixel-style device. If you see a `SecurityException` mentioning
+`GRANT_RUNTIME_PERMISSIONS`, your device's manufacturer is very likely one
+of them.
+ 
+**Xiaomi / Redmi / POCO (MIUI, HyperOS):**
+ 
+1. Go to Settings → Additional settings → Developer options.
+2. Turn on **USB debugging (Security settings)** — this is separate from
+   the regular USB debugging toggle.
+3. Sign in to any account if it asks for.
+4. MIUI/HyperOS may enforce a short cooldown before this actually takes
+   effect, even if the toggle shows on immediately. If the grant command
+   still fails right after enabling it, wait a while and try again.
+5. Re-run the grant command above.
+**Other brands (Oppo/Realme/ColorOS, Vivo/Funtouch, Samsung, etc.):**
+ 
+The exact toggle name and location vary, but the fix is the same idea —
+look in Developer options for a setting related to "USB debugging
+security" or similar, enable it, and sign in to any account it asks for.
+If nothing like that exists on your device and the error persists, it may
+be a stricter OEM restriction with no in-app workaround; a factory-stock
+or near-stock Android device (Pixel, Android One) will not have this
+extra step at all.
+
 To revoke it later:
 
 ```
